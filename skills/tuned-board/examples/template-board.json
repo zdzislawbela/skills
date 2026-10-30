@@ -1,0 +1,570 @@
+{
+ "ticket": {
+  "key": "DOM-42",
+  "title": "Porządki po imprezowym weekendzie",
+  "url": "#tiles"
+ },
+ "language": "pl",
+ "pageTitle": "tuned.board template",
+ "intro": "Przykładowa tablica z wymyśloną treścią. Mała domówka wymknęła się spod kontroli, a rodzice wracają w niedzielę o 20:00. Jedno AC = jedna rzecz do ogarnięcia przed ich powrotem.",
+ "qaEnv": "dom.local",
+ "team": {
+  "dev": "Basia",
+  "qa": "Kuba",
+  "pm": "Ania",
+  "design": "Ola"
+ },
+ "repos": [
+  {
+   "id": "dom",
+   "name": "Dom (salon, kuchnia)",
+   "branch": "DOM-42_sprzatanie",
+   "note": "3 zmiany",
+   "mr": "MR 101",
+   "mrUrl": "",
+   "head": "a1b2c3d4e",
+   "pushed": true,
+   "env": "http://dom.local:8080/salon",
+   "envLabel": "Salon",
+   "envNote": "test: każdy, kto wejdzie boso"
+  },
+  {
+   "id": "ogrod",
+   "name": "Ogród (basen, trawnik)",
+   "branch": "DOM-42_basen-trawnik",
+   "note": "zbudowane na gałęzi Domu",
+   "merge": "commit po commicie, bez squasha",
+   "mr": "MR 102",
+   "mrUrl": "",
+   "head": "f0e1d2c3b",
+   "pushed": false,
+   "status": "gotowe do wysłania (lokalnie)",
+   "env": "http://dom.local:8080/ogrod",
+   "envLabel": "Ogród",
+   "envNote": "po odjeździe lawety",
+   "afterPush": "obejść ogród dookoła i policzyć koleiny (ma być 0)"
+  },
+  {
+   "id": "sasiedzi",
+   "name": "Sąsiedzi (płot, ogródek obok)",
+   "branch": "DOM-42_krasnal",
+   "note": "2 zmiany",
+   "mr": "—",
+   "mrUrl": "",
+   "head": "9988aabbc",
+   "pushed": false,
+   "env": "ogródek sąsiada, przez furtkę",
+   "envLabel": "Ogródek obok",
+   "envNote": "dostęp: tylko za zgodą sąsiada"
+  }
+ ],
+ "waiting": {
+  "title": "Czeka na gospodarza imprezy",
+  "items": [
+   "**AC2 Auto w basenie**: laweta zamówiona na niedzielę 10:00, ktoś musi otworzyć bramę.",
+   "**AC4 Krasnal**: QA (Kuba) sprawdza, czy krasnal stoi przodem do ulicy, jak wcześniej.",
+   "**AC5 Sąsiedzi i rodzice**: ciasto upieczone, nikt jeszcze nie zapukał do sąsiadów."
+  ]
+ },
+ "documentation": {
+  "items": [
+   {
+    "label": "Plan sprzątania na niedzielę",
+    "url": "https://dom.local/plan/niedziela",
+    "category": "docs",
+    "status": "Wisi na lodówce: od 9:00 salon, od 12:00 ogród, o 18:00 wizyta u sąsiadów. Design (Ola) sprawdza, czy zostaje czas na prysznic."
+   },
+   {
+    "label": "Jak spuścić wodę z basenu",
+    "url": "https://dom.local/instrukcje/basen",
+    "status": "Szkic, brakuje zdjęcia zaworu."
+   }
+  ]
+ },
+ "outOfScope": [
+  "Nowy zestaw szklanek w miejsce tych, które się stłukły. Osobne zgłoszenie: DOM-43.",
+  "Kot i pies są niewinni i w niczym nie brali udziału."
+ ],
+ "tiles": [
+  {
+   "id": "sprzatanie",
+   "category": "improvement",
+   "env": [
+    "dom"
+   ],
+   "short": "Sprzątanie po gościach",
+   "title": "Salon i kuchnia sprzątnięte po gościach",
+   "ticketAc": "W salonie i kuchni nie zostaje nic, co przynieśli albo zostawili goście.",
+   "change": "Salon i kuchnia wyglądają jak przed imprezą.",
+   "before": "Kubki na każdej półce, konfetti w dywanie, pizza za kanapą.",
+   "now": "14 worków wyniesionych, dywan odkurzony, okna otwarte od rana.",
+   "dev": [
+    "Najwięcej konfetti siedzi pod kanapą i w doniczkach.",
+    "Kubki liczone dwa razy: 63 sztuki, wszystkie w workach."
+   ],
+   "gate": {
+    "type": "config",
+    "name": "sprzatanie.tryb = gruntowne",
+    "note": "Tryb „na szybko” zostawia konfetti pod kanapą.",
+    "by": "demo-basia",
+    "name_by": "Basia (dev)",
+    "at": "2026-10-18T09:05:00+02:00"
+   },
+   "steps": {
+    "analysis": {
+     "state": "done",
+     "at": "2026-10-18T09:00:00+02:00",
+     "proof": {
+      "kind": "log",
+      "label": "inwentaryzacja",
+      "value": "Salon: 63 kubki, 9 pudełek po pizzy, konfetti na 30 m². Kuchnia: zlew pełny."
+     }
+    },
+    "test": {
+     "state": "done",
+     "at": "2026-10-18T11:40:00+02:00",
+     "proof": {
+      "kind": "log",
+      "label": "sprawdzone",
+      "value": "Przejście boso przez salon i kuchnię: nic się nie klei, nic nie chrzęści."
+     }
+    }
+   },
+   "checklists": {
+    "pm": [
+     "Ani jednego kubka na półkach i parapetach.",
+     "Zlew pusty, zmywarka włączona."
+    ],
+    "design": [
+     "Poduszki na kanapie w starym układzie: dwie szare po bokach, żółta na środku."
+    ],
+    "qa": {
+     "steps": [
+      "Wejdź do salonu boso.",
+      "Przejdź od drzwi do okna i z powrotem.",
+      "Zajrzyj pod kanapę z latarką."
+     ],
+     "expect": "Stopy czyste, pod kanapą tylko kurz sprzed imprezy."
+    }
+   },
+   "shots": [
+    [
+     "g01",
+     "Od imprezy do porządku"
+    ]
+   ],
+   "commits": [
+    {
+     "sha": "b2c3d4e5f",
+     "repo": "dom",
+     "branch": "DOM-42_sprzatanie",
+     "title": "feat(DOM-42): 14 bags of cups and pizza boxes taken out",
+     "at": "2026-10-18T10:20:00+02:00"
+    },
+    {
+     "sha": "a1b2c3d4e",
+     "repo": "dom",
+     "branch": "DOM-42_sprzatanie",
+     "title": "fix(DOM-42): confetti vacuumed from under the sofa",
+     "at": "2026-10-18T10:50:00+02:00"
+    },
+    {
+     "sha": "c3d4e5f60",
+     "repo": "dom",
+     "branch": "DOM-42_sprzatanie",
+     "title": "test(DOM-42): barefoot walk across the living room",
+     "at": "2026-10-18T11:40:00+02:00"
+    }
+   ],
+   "seedSignoffs": {
+    "pm": {
+     "by": "demo-ania",
+     "name": "Ania (PM)",
+     "at": "2026-10-18T11:50:00+02:00"
+    },
+    "design": {
+     "by": "demo-ola",
+     "name": "Ola (Design)",
+     "at": "2026-10-18T11:55:00+02:00"
+    },
+    "dev": {
+     "by": "demo-basia",
+     "name": "Basia (dev)",
+     "at": "2026-10-18T11:45:00+02:00"
+    },
+    "verified": {
+     "by": "demo-kuba",
+     "name": "Kuba (QA)",
+     "at": "2026-10-18T12:00:00+02:00"
+    },
+    "merged": {
+     "by": "demo-basia",
+     "name": "Basia (dev)",
+     "at": "2026-10-18T12:10:00+02:00"
+    }
+   },
+   "seedNote": "Ania: poduszki sprawdzone ze zdjęciem z wakacji, układ się zgadza."
+  },
+  {
+   "id": "basen",
+   "category": "bugfix",
+   "env": [
+    "ogrod"
+   ],
+   "short": "Auto w basenie",
+   "title": "Auto taty wyciągnięte z basenu",
+   "ticketAc": "Auto stoi na podjeździe, basen jest pusty i czysty.",
+   "change": "Auto wraca na podjazd, basen nadaje się do użytku.",
+   "before": "Ktoś z gości wycofywał auto spod bramy i zatrzymał się dopiero w basenie.",
+   "now": "Laweta wyciąga auto, woda spuszczona, basen umyty.",
+   "next": "Laweta w niedzielę o 10:00, mechanik ogląda auto w poniedziałek.",
+   "dev": [
+    "Przyczyna: hamulec ręczny niezaciągnięty, podjazd lekko w dół w stronę basenu.",
+    "Kluczyki do auta są od teraz w szufladzie w kuchni."
+   ],
+   "gate": {
+    "type": "fe-flag",
+    "name": "BRAMA_ZAMKNIETA",
+    "note": "Brama zostaje zamknięta, dopóki laweta nie przyjedzie. Wyłączenie flagi otwiera wjazd."
+   },
+   "steps": {
+    "analysis": {
+     "state": "done",
+     "at": "2026-10-18T08:30:00+02:00",
+     "proof": {
+      "kind": "log",
+      "label": "przyczyna",
+      "value": "Ślady opon od bramy do basenu, 12 m. Hamulec ręczny w pozycji „wyłączony”."
+     }
+    },
+    "test": {
+     "state": "todo",
+     "text": "po lawecie"
+    }
+   },
+   "checklists": {
+    "pm": [
+     "Auto stoi na podjeździe, przodem do bramy.",
+     "Basen bez wody i bez szkła na dnie."
+    ],
+    "design": [
+     "Na kafelkach basenu nie ma rys ani śladów opon."
+    ],
+    "qa": {
+     "steps": [
+      "Obejdź basen dookoła.",
+      "Zajrzyj na dno z latarką.",
+      "Uruchom auto i przejedź 2 m do przodu."
+     ],
+     "expect": "Dno czyste. Auto odpala za pierwszym razem i hamuje."
+    }
+   },
+   "shots": [
+    [
+     "a01",
+     "Z basenu na podjazd"
+    ]
+   ],
+   "commits": [
+    {
+     "sha": "f0e1d2c3b",
+     "repo": "ogrod",
+     "branch": "DOM-42_basen-trawnik",
+     "title": "fix(DOM-42): car lifted out of the pool by the tow truck",
+     "at": "2026-10-18T10:40:00+02:00"
+    },
+    {
+     "sha": "e1d2c3b4a",
+     "repo": "ogrod",
+     "branch": "DOM-42_basen-trawnik",
+     "title": "feat(DOM-42): pool drained and scrubbed",
+     "at": "2026-10-18T12:30:00+02:00"
+    }
+   ],
+   "seedSignoffs": {
+    "tester": {
+     "by": "demo-kuba",
+     "name": "Kuba (QA)",
+     "at": "2026-10-18T08:20:00+02:00"
+    },
+    "pm": {
+     "by": "demo-ania",
+     "name": "Ania (PM)",
+     "at": "2026-10-18T08:40:00+02:00"
+    }
+   },
+   "seedNote": "Kuba: kafelki przy schodkach sprawdzę jeszcze raz, jak wyschną."
+  },
+  {
+   "id": "trawnik",
+   "category": "bugfix",
+   "env": [
+    "ogrod"
+   ],
+   "short": "Koleiny na trawniku",
+   "title": "Trawnik bez kolein po aucie",
+   "change": "Trawnik znów jest równy i zielony.",
+   "before": "Od bramy do basenu biegły dwie głębokie koleiny w trawie.",
+   "now": "Koleiny zasypane ziemią, na wierzchu nowa darń.",
+   "next": "Darń podlewać codziennie przez dwa tygodnie, potem raz na trzy dni.",
+   "gate": {
+    "type": "config",
+    "name": "podlewanie.harmonogram = codziennie 6:00",
+    "note": "Bez podlewania nowa darń żółknie po 3 dniach."
+   },
+   "steps": {
+    "analysis": {
+     "state": "done",
+     "at": "2026-10-18T12:45:00+02:00",
+     "proof": {
+      "kind": "log",
+      "label": "pomiar",
+      "value": "Dwie koleiny po 12 m, głębokość do 8 cm. Potrzeba 24 m² darni i 4 worki ziemi."
+     }
+    },
+    "fix": {
+     "state": "done",
+     "at": "2026-10-18T15:30:00+02:00",
+     "text": "darń ułożona",
+     "proof": {
+      "kind": "log",
+      "label": "zmiana",
+      "value": "Ziemia ubita, darń ułożona i podlana. Zostały 2 m² w zapasie."
+     }
+    },
+    "commit": {
+     "state": "todo",
+     "text": "po pierwszym podlewaniu"
+    }
+   },
+   "checklists": {
+    "pm": [
+     "Z tarasu nie widać, którędy jechało auto."
+    ],
+    "design": [
+     "Nowa darń ma ten sam odcień co reszta trawnika."
+    ],
+    "qa": {
+     "steps": [
+      "Przejdź wzdłuż dawnych kolein.",
+      "Postaw na trawie poziomicę w trzech miejscach."
+     ],
+     "expect": "Brak dołków, poziomica pokazuje równo."
+    }
+   },
+   "shots": [
+    [
+     "t01",
+     "Koleiny i nowa darń"
+    ]
+   ],
+   "commits": [],
+   "seedSignoffs": {
+    "tester": {
+     "by": "demo-kuba",
+     "name": "Kuba (QA)",
+     "at": "2026-10-18T12:40:00+02:00"
+    },
+    "design": {
+     "by": "demo-ola",
+     "name": "Ola (Design)",
+     "at": "2026-10-18T15:45:00+02:00"
+    }
+   }
+  },
+  {
+   "id": "krasnal",
+   "category": "bugfix",
+   "env": [
+    "sasiedzi"
+   ],
+   "short": "Krasnal sąsiada",
+   "title": "Krasnal sąsiada wraca do jego ogródka",
+   "change": "Krasnal stoi u sąsiada tam, gdzie stał.",
+   "before": "Krasnal sąsiada stał w nocy na naszym dachu, z kubkiem w ręce.",
+   "now": "Krasnal zdjęty, umyty i odniesiony pod jabłoń sąsiada.",
+   "dev": [
+    "Krasnal zdjęty po drabinie, kubek trafił do worka z AC1.",
+    "Pod jabłonią został ślad podstawki, krasnal stoi dokładnie na nim."
+   ],
+   "gate": {
+    "type": "none",
+    "name": "",
+    "note": "Nic do wyłączenia, krasnal po prostu stoi."
+   },
+   "steps": {
+    "analysis": {
+     "state": "done",
+     "at": "2026-10-18T09:30:00+02:00",
+     "proof": {
+      "kind": "log",
+      "label": "skąd się wziął",
+      "value": "Zdjęcie z imprezy, sobota 1:20: krasnal przechodzi przez płot w rękach gości."
+     }
+    },
+    "test": {
+     "state": "done",
+     "at": "2026-10-18T13:10:00+02:00",
+     "proof": {
+      "kind": "log",
+      "label": "sprawdzone",
+      "value": "Krasnal stoi na śladzie podstawki, przodem do ulicy, jak na starym zdjęciu."
+     }
+    }
+   },
+   "checklists": {
+    "pm": [
+     "Krasnal stoi w ogródku sąsiada, nie u nas."
+    ],
+    "design": [
+     "Czapka krasnala czerwona, bez śladów farby i naklejek."
+    ],
+    "qa": {
+     "steps": [
+      "Wyjrzyj zza płotu na ogródek sąsiada.",
+      "Porównaj ze zdjęciem sprzed weekendu."
+     ],
+     "expect": "Krasnal pod jabłonią, przodem do ulicy, z pustymi rękami."
+    }
+   },
+   "shots": [
+    [
+     "k01",
+     "Z dachu pod jabłoń"
+    ]
+   ],
+   "commits": [
+    {
+     "sha": "9988aabbc",
+     "repo": "sasiedzi",
+     "branch": "DOM-42_krasnal",
+     "title": "fix(DOM-42): gnome back under the neighbour's apple tree",
+     "at": "2026-10-18T12:50:00+02:00"
+    },
+    {
+     "sha": "8877ffeed",
+     "repo": "sasiedzi",
+     "branch": "DOM-42_krasnal",
+     "title": "feat(DOM-42): gnome taken off the roof and washed",
+     "at": "2026-10-18T11:30:00+02:00"
+    },
+    {
+     "sha": "7766eeddc",
+     "repo": "sasiedzi",
+     "branch": "DOM-42_krasnal",
+     "title": "test(DOM-42): gnome position matches the old photo",
+     "at": "2026-10-18T13:10:00+02:00"
+    }
+   ],
+   "seedSignoffs": {
+    "tester": {
+     "by": "demo-kuba",
+     "name": "Kuba (QA)",
+     "at": "2026-10-18T09:20:00+02:00"
+    },
+    "dev": {
+     "by": "demo-basia",
+     "name": "Basia (dev)",
+     "at": "2026-10-18T13:15:00+02:00"
+    },
+    "pm": {
+     "by": "demo-ania",
+     "name": "Ania (PM)",
+     "at": "2026-10-18T13:20:00+02:00"
+    }
+   },
+   "seedNote": "Kuba: zdjęcie porównawcze mam od sąsiadki, jest w dyskusji."
+  },
+  {
+   "id": "spokoj",
+   "category": "feature",
+   "env": [
+    "sasiedzi",
+    "kuchnia (lista na lodówce)"
+   ],
+   "short": "Sąsiedzi i rodzice spokojni",
+   "title": "Sąsiedzi i rodzice spokojni przed niedzielą 20:00",
+   "change": "Sąsiedzi nie dzwonią do rodziców, a rodzice dowiadują się wszystkiego od nas.",
+   "before": "Sąsiedzi z obu stron słyszeli muzykę do 3:00 i widzieli auto w basenie.",
+   "now": "Przeprosiny z ciastem u sąsiadów o 18:00, krótka lista dla rodziców na lodówce.",
+   "gate": {
+    "type": "unknown",
+    "name": "",
+    "note": "Nie wiadomo jeszcze, czy lista dla rodziców wspomina o basenie od razu, czy po kolacji."
+   },
+   "steps": {
+    "analysis": {
+     "state": "done",
+     "at": "2026-10-18T14:00:00+02:00",
+     "proof": {
+      "kind": "log",
+      "label": "kogo to dotyczy",
+      "value": "Sąsiedzi z lewej (muzyka), sąsiedzi z prawej (krasnal), rodzice (wszystko)."
+     }
+    }
+   },
+   "checklists": {
+    "pm": [
+     "Sąsiedzi przyjęli ciasto i przeprosiny.",
+     "Lista dla rodziców mówi prawdę, w tym o basenie."
+    ],
+    "design": [
+     "Lista mieści się na jednej kartce A5, pismem, które da się przeczytać."
+    ],
+    "qa": {
+     "steps": [
+      "Zapukaj do sąsiadów z lewej i z prawej, z ciastem.",
+      "Przeczytaj listę na głos, jakbyś był rodzicem.",
+      "Sprawdź telefon do 20:00."
+     ],
+     "expect": "Obie wizyty kończą się uśmiechem. Do 20:00 żadnego telefonu od sąsiadów do rodziców."
+    }
+   },
+   "shots": [
+    [
+     "r01",
+     "Ciasto i lista na lodówce"
+    ]
+   ],
+   "seedSignoffs": {
+    "pm": {
+     "by": "demo-ania",
+     "name": "Ania (PM)",
+     "at": "2026-10-18T14:10:00+02:00"
+    }
+   }
+  }
+ ],
+ "seedMessages": [
+  {
+   "tile": "sprzatanie",
+   "author": "Ania (PM)",
+   "at": "2026-10-18T11:52:00+02:00",
+   "text": "Czy zostawiamy jedną paczkę konfetti na urodziny babci?"
+  },
+  {
+   "tile": "sprzatanie",
+   "author": "Basia (dev)",
+   "at": "2026-10-18T11:58:00+02:00",
+   "text": "Zostawiamy, jest schowana w szafce nad lodówką."
+  },
+  {
+   "tile": "basen",
+   "author": "Kuba (QA)",
+   "at": "2026-10-18T08:25:00+02:00",
+   "text": "Potwierdzam: auto stoi w basenie, przednimi kołami na schodkach. Nikt nie ucierpiał."
+  },
+  {
+   "tile": "krasnal",
+   "author": "Kuba (QA)",
+   "at": "2026-10-18T13:12:00+02:00",
+   "text": "Sąsiadka przysłała zdjęcie sprzed weekendu, krasnal stał dokładnie tak."
+  },
+  {
+   "tile": "spokoj",
+   "author": "Ola (Design)",
+   "at": "2026-10-18T14:20:00+02:00",
+   "text": "Proponuję zacząć listę od dobrej wiadomości: dom jest czysty."
+  }
+ ]
+}

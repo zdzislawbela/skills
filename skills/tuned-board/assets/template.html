@@ -1,0 +1,870 @@
+<title><!--TB:TITLE--></title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: header + "where it is" strip; then Mapa AC (sticky left column on wide screens) | Stan tablicy + Lista AC */
+:root {
+  --bg: #eef0f4;
+  --surface: #ffffff;
+  --band: #e3e9f3;
+  --sep: #b9c3d6;
+  --shadow: 0 1px 2px rgba(20, 32, 56, 0.06), 0 6px 16px rgba(20, 32, 56, 0.07);
+  --sunken: #eef0f4;
+  --ink: #1b2330;
+  --muted: #5d6878;
+  --line: #dde1e8;
+  --accent: #2856c7;
+  --on-accent: #ffffff;
+  --ok: #1f7a4a;
+  --ok-soft: #e3f3ea;
+  --warn: #8f5400;
+  --warn-soft: #fbefd9;
+  --skip: #8a8f98;
+  --decide: #8a3fb5;
+  --decide-soft: #f1e6f8;
+  --danger: #b3261e;
+  --danger-soft: #fbe4e2;
+  --accent-soft: #e6edfb;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0f1318; --surface: #1b212a; --band: #2b3545; --sep: #3d4859; --shadow: none; --sunken: #151a21; --ink: #e4e8ef; --muted: #9aa4b3; --line: #2c3442;
+    --accent: #7d9ef0; --on-accent: #10141b; --ok: #4fbf83; --ok-soft: #173326; --warn: #e5a23a; --warn-soft: #3a2d14; --skip: #6f7682; --decide: #c48ae6; --decide-soft: #2c2236; --danger: #f08a80; --danger-soft: #3a1d1b; --accent-soft: #1d2740;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0f1318; --surface: #1b212a; --band: #2b3545; --sep: #3d4859; --shadow: none; --sunken: #151a21; --ink: #e4e8ef; --muted: #9aa4b3; --line: #2c3442;
+  --accent: #7d9ef0; --on-accent: #10141b; --ok: #4fbf83; --ok-soft: #173326; --warn: #e5a23a; --warn-soft: #3a2d14; --skip: #6f7682; --decide: #c48ae6; --decide-soft: #2c2236; --danger: #f08a80; --danger-soft: #3a1d1b; --accent-soft: #1d2740;
+}
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; }
+a { color: var(--accent); }
+.wrap {
+  max-width: 1380px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 20px;
+}
+header { display: flex; flex-direction: column; gap: 4px; }
+.key { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+.hrow { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; }
+.tb-build { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+h1 { margin: 0; font-size: 26px; font-weight: 600; line-height: 1.25; text-wrap: balance; }
+.sub { margin: 0; color: var(--muted); font-size: 14px; max-width: 75ch; }
+.legend { margin: 4px 0 0; font-size: 13px; color: var(--ink); max-width: 75ch; padding: 6px 10px; border-left: 3px solid var(--sep); background: var(--surface); border-radius: 0 4px 4px 0; }
+.legend b { font-weight: 600; }
+.howto { margin: 4px 0 0; font-size: 14px; color: var(--ink); max-width: 75ch; }
+.howto b { font-weight: 600; }
+code { font-family: var(--font-mono); font-size: 0.9em; background: var(--sunken); padding: 0 4px; border-radius: 3px; overflow-wrap: anywhere; }
+
+/* Where it is: one row per repo */
+.where { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+.where h2 { margin: 0; font-size: 14px; font-weight: 600; }
+.where .scroll { overflow-x: auto; }
+.where table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 13px; }
+.where th, .where td { text-align: left; padding: 5px 12px 5px 0; vertical-align: top; border-top: 1px solid var(--line); }
+.where thead th { border-top: 0; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.where tbody th { font-weight: 600; white-space: nowrap; }
+.where .mono { font-family: var(--font-mono); font-size: 12px; }
+.where td.mono:first-of-type { white-space: nowrap; }
+.where .rnote { white-space: normal; }
+.where .rnote { display: block; font-family: var(--font-body); font-size: 12px; color: var(--muted); }
+.where .rnote b { font-weight: 600; color: var(--ink); }
+.pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 0 7px; border-radius: 999px; white-space: nowrap; background: var(--ok-soft); color: var(--ok); }
+.pill.local { background: var(--warn-soft); color: var(--warn); }
+.where .cl { display: none; }
+@media (max-width: 600px) {
+  .where table, .where tbody, .where tr, .where th, .where td { display: block; }
+  .where table { min-width: 0; }
+  .where thead { display: none; }
+  .where tbody tr { padding: 8px 0; border-top: 1px solid var(--line); }
+  .where tbody tr:first-child { border-top: 0; padding-top: 0; }
+  .where th, .where td { border-top: 0; padding: 1px 0; }
+  .where tbody th { font-size: 14px; white-space: normal; }
+  .where td.mono:first-of-type { white-space: normal; overflow-wrap: anywhere; }
+  .where .cl { display: inline; font-family: var(--font-body); font-size: 12px; font-weight: 600; color: var(--muted); }
+}
+
+.layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+.col-main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+/* Mapa AC: heading, one-line subtitle, legend once, column header once, compact rows grouped by state */
+.index { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.index h2 { margin: 0; font-size: 16px; font-weight: 600; }
+.isub { margin: 0; font-size: 13px; color: var(--muted); }
+.ileg { margin: 0; font-size: 12px; color: var(--ink); }
+.icols { margin: 4px 0 0; padding-bottom: 4px; border-bottom: 1px solid var(--line); font-size: 12px; color: var(--muted); white-space: pre-wrap; cursor: help; }
+.igroups { display: flex; flex-direction: column; gap: 10px; }
+.igrp h3 { margin: 0 0 2px; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.ilist { list-style: none; margin: 0; padding: 0; }
+.ilist li + li { border-top: 1px solid var(--line); }
+.ilist a { display: flex; flex-direction: column; gap: 2px; padding: 5px 6px; margin: 0 -6px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 12px; line-height: 1.4; min-width: 0; }
+.ilist a:hover { background: var(--sunken); }
+.ilist a:hover .il1 { color: var(--accent); text-decoration: underline; }
+.ilist li[aria-current="true"] a { background: var(--accent-soft); }
+.ilist li[aria-current="true"] .il1 { color: var(--accent); }
+.il1 { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.il1 .znum { font-size: 12px; font-weight: 600; color: inherit; }
+.il2 { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 4px; }
+.iflow, .iteam { display: inline-flex; flex-wrap: wrap; gap: 2px; }
+.iseg { font-family: var(--font-mono); font-size: 11px; line-height: 18px; padding: 0 3px; border-radius: 3px; background: var(--sunken); color: var(--muted); white-space: nowrap; }
+.iseg[data-s="done"] { background: var(--ok-soft); color: var(--ok); }
+.iseg[data-s="current"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.iseg[data-s="noproof"] { background: var(--warn-soft); color: var(--warn); font-weight: 600; }
+.isep { width: 1px; height: 14px; background: var(--sep); }
+.ichip { font-size: 11px; line-height: 16px; font-weight: 600; padding: 0 4px; border: 1px solid var(--sep); border-radius: 999px; color: var(--muted); white-space: nowrap; }
+.ichip[data-s="done"] { background: var(--ok); border-color: var(--ok); color: var(--on-accent); }
+.ilist .ist { font-size: 12px; color: var(--muted); font-weight: 600; }
+.ilist li[data-state="ready"] .ist { color: var(--accent); }
+.ilist li[data-state="done"] .ist { color: var(--ok); }
+.summary .flabel { font-size: 13px; color: var(--muted); align-self: center; }
+.summary .chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+/* Stan tablicy: overview above "Lista AC" */
+.board-state { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.sec-h { margin: 0; font-size: 18px; font-weight: 600; }
+.isum { margin: 0; font-size: 14px; color: var(--ink); display: flex; flex-direction: column; gap: 2px; }
+.isum b { font-weight: 600; }
+.waitlist { margin: 0; display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.waitlist h3, .board-state .owner h3 { margin: 0; font-size: 14px; font-weight: 600; }
+.waitlist table { border-collapse: collapse; align-self: flex-start; }
+.waitlist th, .waitlist td { text-align: left; vertical-align: top; padding: 3px 16px 3px 0; border-top: 1px solid var(--line); }
+.waitlist thead th { border-top: 0; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.waitlist tbody th { font-weight: 600; white-space: nowrap; }
+.tick { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 4px; font-size: 12px; font-weight: 700; color: var(--muted); border: 1px dashed var(--line); }
+.tick[data-on] { border: 0; background: var(--ok); color: var(--on-accent); }
+@media (min-width: 1100px) {
+  .layout { grid-template-columns: 384px minmax(0, 1fr); align-items: start; }
+  .index { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); max-height: calc(100vh - 32px); overflow-y: auto; }
+}
+
+.summary { display: flex; flex-direction: column; gap: 10px; }
+.count { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; font: inherit; font-size: 13px; color: var(--ink); background: var(--surface); font-variant-numeric: tabular-nums; cursor: pointer; }
+.count b { font-weight: 600; }
+.count:hover:not(:disabled) { border-color: var(--accent); }
+.count:disabled { cursor: default; border-style: dashed; }
+.count[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.count.clear { color: var(--accent); }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--skip)); flex: none; }
+[data-state="ready"] { --c: var(--accent); }
+[data-state="waiting"] { --c: var(--warn); }
+[data-state="progress"] { --c: var(--warn); }
+[data-state="verify"] { --c: var(--decide); }
+[data-state="done"] { --c: var(--ok); }
+.notice { margin: 0; font-size: 13px; color: var(--muted); }
+.notice:empty { display: none; }
+
+.owner { border-left: 3px solid var(--decide); padding: 2px 0 2px 12px; display: flex; flex-direction: column; gap: 6px; }
+.board-state .owner h3 { color: var(--decide); }
+.owner ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+/* Dokumentacja (not ACs): link + status per item, no sign-offs */
+.docsec { border-left: 3px solid var(--sep); padding: 2px 0 2px 12px; display: flex; flex-direction: column; gap: 4px; }
+.docsec h3 { margin: 0; font-size: 14px; font-weight: 600; }
+.docsec .dsub { margin: 0; font-size: 12px; color: var(--muted); }
+.docsec ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.docsec li { overflow-wrap: anywhere; }
+.docsec .dname { font-weight: 600; }
+.docsec .dstat { display: block; font-size: 13px; color: var(--ink); }
+
+/* Tiles */
+ol.tiles { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 48px; }
+li.tile { background: var(--surface); border: 1px solid var(--sep); border-radius: 10px; box-shadow: var(--shadow); padding: 0; display: flex; flex-direction: column; scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 12px); overflow: hidden; }
+.fold-all { display: flex; flex-wrap: wrap; gap: 8px; }
+li.tile:target { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Header band: AC pill, title, category; then state row */
+.head { display: flex; flex-direction: column; gap: 8px; min-width: 0; padding: 12px 16px; background: var(--band); border-bottom: 1px solid var(--sep); }
+.head-right { margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; }
+.title { cursor: pointer; }
+/* Fold: header band stays, body folds */
+.fold { flex: none; width: 28px; height: 28px; display: inline-grid; place-items: center; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); cursor: pointer; font: 600 13px/1 var(--font-body); }
+.fold:hover { border-color: var(--accent); color: var(--accent); }
+.fold::before { content: "\25BE"; }
+.fold[aria-expanded="false"]::before { content: "\25B8"; }
+.ac-body { display: flex; flex-direction: column; gap: 14px; padding: 14px 16px 18px; }
+.ac-body .body { display: flex; flex-direction: column; gap: 14px; }
+li.tile.folded .head { border-bottom: 0; }
+/* Labelled section dividers inside an AC */
+.divider { display: flex; align-items: center; gap: 10px; margin: 6px 0 0; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.divider::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+.divider .dz { font-family: var(--font-mono); color: var(--accent); letter-spacing: 0; }
+.ticket-ac { margin: 0; font-size: 12px; color: var(--muted); max-width: 75ch; }
+.ticket-ac b { font-weight: 600; }
+/* One short state word in the title row, only once it means something (ready / merged) */
+.badge { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--sunken); color: var(--muted); }
+.badge[data-state="ready"] { background: var(--accent); color: var(--on-accent); }
+.badge[data-state="done"] { background: var(--ok-soft); color: var(--ok); }
+.upd { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+/* Dev checklist + Team checklist in the header band, same labelled row of equal pills */
+.cl { display: flex; flex-direction: column; gap: 6px; }
+.ckrow { display: grid; grid-template-columns: 104px minmax(0, 1fr); align-items: center; gap: 4px 10px; }
+.ckl { font-size: 12px; font-weight: 600; color: var(--ink); }
+.cks { display: flex; flex-wrap: wrap; gap: 6px; }
+.ck { font: inherit; position: relative; box-sizing: border-box; display: inline-flex; flex-direction: column; justify-content: center; align-items: flex-start; min-width: 88px; min-height: 36px; padding: 2px 10px; border: 1px solid var(--sep); border-radius: 18px; background: var(--surface); color: var(--ink); cursor: pointer; text-align: left; line-height: 1.3; }
+.ck .ckh { font-size: 13px; font-weight: 600; white-space: nowrap; }
+.ck .ckm { margin-right: 5px; }
+.ck .who { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.ck .who:empty { display: none; }
+.ck:hover { border-color: var(--accent); }
+.ck[data-s="todo"] { border-style: dashed; }
+.ck[data-s="todo"] .ckm { color: var(--muted); }
+.ck[data-s="done"] { border-color: var(--ok); background: var(--ok-soft); }
+.ck[data-s="done"] .ckm { color: var(--ok); }
+.ck[data-s="current"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.ck[data-s="na"] { background: var(--sunken); color: var(--muted); }
+.ck[data-s="noproof"] { border-color: var(--warn); background: var(--warn-soft); color: var(--warn); }
+.ck[aria-expanded="true"] { box-shadow: 0 0 0 2px var(--ink); }
+/* DEV hint: Dev checklist done, DEV not signed yet: a small dot (the words are in title + aria-describedby) */
+.ck[data-hint] { padding-right: 18px; }
+.ck[data-hint]::after { content: ""; position: absolute; top: 4px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.ckproof { display: flex; flex-direction: column; gap: 4px; padding: 6px 10px; border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0; background: var(--surface); font-size: 12px; min-width: 0; }
+.ckproof[hidden] { display: none; }
+.ckproof .ckp1 { font-size: 13px; }
+.ckproof .ckp1 b { font-weight: 600; }
+.ckproof .ckpt { overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .ckrow { grid-template-columns: minmax(0, 1fr); }
+  .cks { gap: 4px; }
+  .ck { min-width: 0; padding: 2px 7px; }
+  .ck .ckm { margin-right: 3px; }
+  .ck[data-hint] { padding-right: 15px; }
+  /* fold, AC pill and title share the first line; category and Diff wrap below */
+  .title-row .title { flex: 1 1 calc(100% - 40px); flex-wrap: nowrap; align-items: flex-start; }
+  .title-row .title > span:last-child { min-width: 0; }
+}
+.title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; min-width: 0; }
+.title { margin: 0; font-weight: 600; font-size: 17px; min-width: 0; overflow-wrap: anywhere; text-wrap: balance; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.znum { font-family: var(--font-mono); font-weight: 500; font-size: 12px; color: var(--muted); }
+.title .znum { font-size: 18px; font-weight: 600; color: var(--on-accent); background: var(--accent); padding: 2px 12px; border-radius: 999px; line-height: 1.4; flex: none; }
+/* Category label: neutral tint per category, ink text (never alarm red) */
+.cat { font-size: 12px; line-height: 1.6; padding: 0 7px; border-radius: 4px; border: 1px solid var(--line); background: var(--sunken); color: var(--ink); white-space: nowrap; }
+.cat[data-cat="feature"] { background: var(--accent-soft); border-color: transparent; }
+.cat[data-cat="improvement"] { background: var(--ok-soft); border-color: transparent; }
+.cat[data-cat="bugfix"] { background: var(--warn-soft); border-color: transparent; }
+.cat[data-cat="docs"] { background: var(--decide-soft); border-color: transparent; }
+.gate-chip { font: inherit; font-size: 12px; line-height: 1.6; padding: 0 7px; border: 1px solid var(--line); border-radius: 4px; background: var(--sunken); color: var(--muted); cursor: pointer; max-width: 100%; overflow-wrap: anywhere; text-align: left; }
+.gate-chip:hover { border-color: var(--accent); color: var(--ink); }
+.gate-chip[data-type="fe-flag"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.gate-chip[data-type="be-flag"] { background: var(--decide-soft); border-color: var(--decide); color: var(--decide); }
+.gate-chip[data-type="config"] { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
+.gate-chip[data-type="unknown"] { border-style: dashed; background: var(--warn-soft); border-color: var(--warn); color: var(--warn); }
+.gate-chip:disabled { cursor: default; }
+.gate-note { font-size: 12px; color: var(--muted); max-width: 75ch; overflow-wrap: anywhere; }
+.gate-edit { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 8px 10px; margin-top: 4px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); font-size: 13px; }
+.gate-edit label { font-size: 12px; color: var(--muted); font-weight: 500; }
+.gate-edit select, .gate-edit input { font: inherit; font-size: 13px; color: var(--ink); padding: 4px 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); }
+.gate-edit input { flex: 1 1 160px; min-width: 0; font-family: var(--font-mono); }
+.gate-edit input:disabled { opacity: .5; }
+.gate-edit .gate-note-in { flex-basis: 100%; font-family: var(--font-body); }
+.gate-edit .gate-who { flex-basis: 100%; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.desc { display: flex; flex-direction: column; gap: 4px; }
+.what { margin: 0; font-size: 14px; max-width: 75ch; }
+.what b { font-weight: 600; }
+.what.change { font-size: 15px; }
+.dev-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; font-size: 13px; color: var(--muted); }
+.next { margin: 0; font-size: 13px; color: var(--muted); max-width: 75ch; }
+.next b { color: var(--ink); font-weight: 600; }
+
+/* Dev checklist proof (opened from a Dev pill) */
+.proof .np { font-weight: 600; color: var(--warn); }
+.proof { font-size: 12px; min-width: 0; }
+.proof a { overflow-wrap: anywhere; }
+.proof details { border-top: 0; padding-top: 0; }
+.proof summary { font-size: 12px; }
+.proof pre { margin: 4px 0 0; padding: 6px 8px; max-height: 240px; overflow: auto; font-family: var(--font-mono); font-size: 11px; background: var(--sunken); color: var(--ink); border-radius: 4px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.proof img { display: block; margin-top: 4px; max-width: 100%; max-height: 120px; border: 1px solid var(--line); border-radius: 4px; cursor: zoom-in; background: #fff; }
+
+details.sec { border-top: 0; padding-top: 0; }
+details.sec > summary { cursor: pointer; font-size: 13px; color: var(--accent); font-weight: 500; width: fit-content; }
+/* "Co sprawdzić w ACn": own block */
+.checks-wrap { display: flex; flex-direction: column; gap: 8px; }
+.docs-wrap { display: flex; flex-direction: column; gap: 8px; }
+details.sec[open] > summary { margin-bottom: 8px; }
+.commit-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; font-size: 12px; }
+.commit-list li { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; }
+.commit-list .sha { font-family: var(--font-mono); font-weight: 500; }
+.commit-list .cm { font-family: var(--font-mono); font-size: 11px; color: var(--muted); overflow-wrap: anywhere; }
+.commit-list .t { overflow-wrap: anywhere; min-width: 0; }
+.checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 24px; }
+.check-col { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.check-col h3 { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); overflow-wrap: anywhere; }
+.check-col ul, .check-col ol { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 3px; font-size: 13px; }
+.check-col.qa { grid-column: 1 / -1; }
+.check-col h3 .qenv { text-transform: none; letter-spacing: 0; font-family: var(--font-mono); }
+.check-col ol.num { list-style: none; padding-left: 0; }
+.check-col ol.num .n { font-family: var(--font-mono); font-weight: 600; }
+.expect { margin: 0; font-size: 13px; }
+.expect b { font-weight: 600; }
+
+.tech-wrap { display: flex; flex-direction: column; gap: 8px; }
+.gate-slot { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.note { font: inherit; font-size: 13px; color: var(--ink); width: 100%; box-sizing: border-box; padding: 4px 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; }
+.note::placeholder, textarea::placeholder { color: var(--muted); }
+.note:hover, .note:focus { border-bottom-color: var(--accent); }
+.thread { display: flex; flex-direction: column; gap: 8px; }
+.msgs { display: flex; flex-direction: column; gap: 8px; }
+.msg { display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.msg .by { font-size: 12px; color: var(--muted); }
+.msg .by b { color: var(--ink); font-weight: 600; }
+.msg .text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.empty { font-size: 13px; color: var(--muted); margin: 0; }
+.note-empty[hidden] { display: none; }
+.composer { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
+.composer textarea { flex: 1 1 280px; font: inherit; font-size: 14px; min-height: 60px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); resize: vertical; }
+.btn { font: inherit; font-size: 14px; font-weight: 500; padding: 8px 14px; border-radius: 6px; border: 0; background: var(--accent); color: var(--on-accent); cursor: pointer; }
+.btn.small { font-size: 13px; padding: 4px 10px; }
+.btn.ghost { background: transparent; color: var(--accent); border: 1px solid var(--line); }
+.ro .sign { pointer-events: none; }
+.ro .composer, .ro .gate-edit { display: none; }
+
+.side-sec { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.side-sec h2 { margin: 0; font-size: 14px; font-weight: 600; }
+.side-sec .links { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+.side-sec ul { margin: 0; padding-left: 20px; font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+
+button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible, select:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lightbox { position: fixed; inset: 0; background: rgba(10, 12, 16, 0.85); display: flex; align-items: center; justify-content: center; padding: 24px; cursor: zoom-out; z-index: 10; }
+.lightbox img { max-width: 100%; max-height: 100%; background: #fff; border-radius: 4px; }
+@media (prefers-reduced-motion: no-preference) { .ck, .tick { transition: background-color .12s, border-color .12s; } }
+/*TB:PLAYER_CSS*/
+.tb-version { margin: 8px 0 0; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+/*TB:DIFF_CSS*/
+</style>
+
+<div class="wrap" id="app">
+<!--TB:HEADER-->
+<!--TB:WHERE-->
+  <div class="layout">
+<!--TB:INDEX-->
+  <main class="col-main">
+    <p class="notice" id="notice" role="status"><!--TB:LOADING--></p>
+    <section class="board-state" aria-labelledby="bs-h">
+      <h2 class="sec-h" id="bs-h"><!--TB:STATE_H--></h2>
+      <div class="summary" id="summary"></div>
+<!--TB:WAITING-->
+<!--TB:DOCS-->
+    </section>
+    <h2 class="sec-h" id="list-h"><!--TB:LIST_H--></h2>
+    <ol class="tiles" id="tiles" aria-labelledby="list-h">
+<!--TB:TILES-->
+    </ol>
+<!--TB:FOOTER-->
+    <p class="tb-version"><!--TB:VERSION--></p>
+  </main>
+  </div>
+</div>
+
+<script>
+(function () {
+  // Board config written by scripts/build.py: ticket, UI strings, per-tile static steps and gate (used until the db answers)
+  const CONFIG = /*TB:CONFIG*/null;
+  const T = CONFIG.strings;
+  // Sign-off = {by: user id, at, name?}; name only for imported/demo entries, live clicks store the id only.
+  // Keys are stored in db items/<id>.signoffs; keep them stable across rebuilds or existing sign-offs disappear
+  const SIGNOFFS = [
+    // Team checklist, in order. "progress" (W toku) is no longer shown; its db key is ignored
+    { key: 'tester', label: T.sign.tester, bugOnly: true },
+    { key: 'dev', label: T.sign.dev },
+    { key: 'verified', label: T.sign.verified },
+    { key: 'pm', label: T.sign.pm },
+    { key: 'design', label: T.sign.design },
+    { key: 'merged', label: T.sign.merged },
+  ];
+  // Index marks: text marks, so the state never depends on colour alone
+  const MARK = { done: '\u2713', current: '\u25B6', todo: '\u25CB', na: '\u2013', noproof: '!' };
+  const STATES = [
+    { id: 'waiting', label: T.stWaiting },
+    { id: 'ready', label: T.stReady },
+    { id: 'done', label: T.stDone },
+  ];
+  const signoffsFor = li => SIGNOFFS.filter(s => !s.bugOnly || li.dataset.category === 'bugfix');
+  // Optional board.json "team": {dev, qa, pm, design} names, so "waiting on whom" can name people
+  const TEAM = CONFIG.team || {};
+  const TEAM_KEY = { dev: 'dev', verified: 'qa', tester: 'qa', pm: 'pm', design: 'design' };
+  const withName = x => x.label + (TEAM[TEAM_KEY[x.key]] ? ` (${TEAM[TEAM_KEY[x.key]]})` : '');
+  const GATE_TYPES = Object.entries(T.gateTypes);
+  const STEPS = [['analysis', T.stepAnalysis], ['fix', T.stepFix], ['commit', T.stepCommit], ['test', T.stepTest]];
+  let filter = null;
+
+  const list = document.getElementById('tiles');
+  const app = document.getElementById('app');
+  const noticeEl = document.getElementById('notice');
+  const docs = new Map();      // tile id -> db body
+  let messages = [];
+  let db = null, user = null, myId = null, readOnly = false;
+  const queues = new Map();
+
+  const fmt = iso => {
+    const d = new Date(iso);
+    return isNaN(d) ? '' : d.toLocaleString(T.locale, { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' });
+  };
+  const fmtDay = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleDateString(T.locale, { day: 'numeric', month: 'numeric' }); };
+  // Team members working from the terminal sign with their window name (e.g. "1-colleague"), not a claude.ai user id
+  const isTeamWindow = by => /^\d+-[a-z]+$/.test(String(by));
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+
+  function gateLabel(g) {
+    if (!g || !T.gateTypes[g.type]) return { type: 'unknown', text: T.gateUnknown || T.gateNone };
+    if (g.type === 'none') return { type: 'none', text: T.gateNone };
+    return { type: g.type, text: T.gatePrefix[g.type] + ' ' + (g.name || T.gateNoName) };
+  }
+
+/*TB:PLAYER_JS*/
+
+  // ---- interactive skeleton around the static tile body
+  function buildTile(li) {
+    const id = li.dataset.id;
+    const body = li.querySelector('.body');
+    const head = el('div', 'head');
+    const titleRow = el('div', 'title-row');
+    const z = li.dataset.z;
+    const fold = el('button', 'fold'); fold.type = 'button'; fold.setAttribute('aria-expanded', 'true'); fold.setAttribute('aria-controls', 'ac-body-' + id);
+    fold.setAttribute('aria-label', T.foldClose + z);
+    titleRow.append(fold);
+    const h = el('h2', 'title'); h.append(el('span', 'znum', z), el('span', null, li.dataset.title));
+    titleRow.append(h);
+    const cat = el('span', 'cat', T.categoryPrefix + T.categories[li.dataset.category]); cat.dataset.cat = li.dataset.category;
+    titleRow.append(cat);
+    const badge = el('span', 'badge'); badge.hidden = true;
+    const right = el('div', 'head-right'); right.append(badge); titleRow.append(right);
+    // Dev checklist + Team checklist, same labelled row of equal pills, right under the title row (seen folded too)
+    const ckRow = (label, key) => {
+      const row = el('div', 'ckrow'); const l = el('span', 'ckl', label); l.id = key + '-l-' + id;
+      const g = el('div', 'cks'); g.setAttribute('role', 'group'); g.setAttribute('aria-labelledby', l.id);
+      row.append(l, g); return [row, g];
+    };
+    const pill = (cls, label) => { const b = el('button', 'ck ' + cls); b.type = 'button'; const hh = el('span', 'ckh'); hh.append(el('span', 'ckm'), el('span', 'ckt', label)); b.append(hh, el('span', 'who')); return b; };
+    const [devRow, devG] = ckRow(T.devFlow, 'dev');
+    STEPS.forEach(([k, label]) => {
+      // Dev pills are not sign buttons: they open the step's proof under the rows
+      const b = pill('dstep', label); b.dataset.k = k; b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-controls', 'ckp-' + id); devG.append(b);
+    });
+    const [teamRow, teamG] = ckRow(T.teamTitle, 'team');
+    signoffsFor(li).forEach(s => { const b = pill('sign', s.label); b.dataset.key = s.key; b.setAttribute('aria-pressed', 'false'); teamG.append(b); });
+    const hintTxt = el('span', 'visually-hidden', T.devHint); hintTxt.id = 'devhint-' + id; teamRow.append(hintTxt);
+    const ckp = el('div', 'ckproof'); ckp.id = 'ckp-' + id; ckp.hidden = true; ckp.setAttribute('role', 'region'); ckp.setAttribute('aria-label', T.devFlow + ' · ' + z);
+    const cl = el('div', 'cl'); cl.append(devRow, teamRow, ckp);
+    const gateChip = el('button', 'gate-chip', T.gateNone); gateChip.type = 'button'; gateChip.dataset.type = 'unknown';
+    gateChip.setAttribute('aria-expanded', 'false'); gateChip.setAttribute('aria-controls', 'gate-edit-' + id);
+    const gateEdit = el('form', 'gate-edit'); gateEdit.id = 'gate-edit-' + id; gateEdit.hidden = true;
+    gateEdit.setAttribute('aria-label', T.gateForm);
+    const gtLbl = el('label', null, T.gateType); gtLbl.htmlFor = 'gate-type-' + id;
+    const gtSel = el('select', 'gate-type'); gtSel.id = 'gate-type-' + id;
+    GATE_TYPES.forEach(([v, label]) => { const o = el('option', null, label); o.value = v; gtSel.append(o); });
+    const gnLbl = el('label', null, T.gateName); gnLbl.htmlFor = 'gate-name-' + id;
+    const gnIn = el('input', 'gate-name'); gnIn.id = 'gate-name-' + id; gnIn.placeholder = T.gateNamePh; gnIn.autocomplete = 'off'; gnIn.spellcheck = false;
+    const gnoteLbl = el('label', null, T.gateNote); gnoteLbl.htmlFor = 'gate-note-' + id;
+    const gnoteIn = el('input', 'gate-note-in'); gnoteIn.id = 'gate-note-' + id; gnoteIn.placeholder = T.gateNotePh; gnoteIn.autocomplete = 'off';
+    const gSave = el('button', 'btn small', T.save); gSave.type = 'submit';
+    const gCancel = el('button', 'btn small ghost gate-cancel', T.cancel); gCancel.type = 'button';
+    gateEdit.append(gtLbl, gtSel, gnLbl, gnIn, gnoteLbl, gnoteIn, gSave, gCancel, el('span', 'gate-who'));
+    head.append(titleRow, cl);
+    li.prepend(head);
+    const divider = (label, hid) => { const d = el('h3', 'divider'); d.append(el('span', 'dz', z), document.createTextNode(' · ' + label)); if (hid) d.id = hid; return d; };
+    // Body: Co się zmienia (+ AC w Jirze) · Jak to działa · Co sprawdzić · Szczegóły techniczne (Włącznik, notes, commits) · Notatka · Dyskusja
+    const desc = body.querySelector('.desc');
+    if (li.dataset.ticketAc) { const j = el('p', 'ticket-ac'); j.append(el('b', null, T.ticketAc + ' '), document.createTextNode(li.dataset.ticketAc)); if (desc) desc.append(j); else body.prepend(j); }
+    const gslot = body.querySelector('.gate-slot');
+    (gslot || body).append(gateChip, el('span', 'gate-note'), gateEdit, el('span', 'upd'));
+    const note = el('input', 'note'); note.id = 'note-' + id; note.placeholder = T.notePlaceholder.replace('{z}', z); note.setAttribute('aria-label', T.noteLabel + ' ' + z);
+    const thread = el('div', 'thread-wrap');
+    const box = el('div', 'thread'); const msgs = el('div', 'msgs');
+    const comp = el('form', 'composer');
+    const ta = el('textarea'); ta.id = 'msg-' + id; ta.placeholder = T.threadPlaceholder.replace('{z}', z); ta.setAttribute('aria-label', T.threadLabel + ' ' + z);
+    const send = el('button', 'btn', T.send); send.type = 'submit';
+    comp.append(ta, send); box.append(msgs, comp); thread.append(box);
+    const acBody = el('div', 'ac-body'); acBody.id = 'ac-body-' + id;
+    // labelled dividers for the static sections (desc, docs, checks, tech)
+    if (desc) desc.before(divider(T.secChange));
+    body.querySelectorAll('.docs-wrap, .checks-wrap, .tech-wrap').forEach(sec => { const hh = sec.querySelector('.divider'); if (hh) hh.prepend(el('span', 'dz', z), document.createTextNode(' · ')); });
+    const noteEmpty = el('p', 'empty note-empty', T.noteEmpty);
+    acBody.append(body, divider(T.noteLabel), noteEmpty, note, divider(T.thread), thread);
+    li.append(acBody);
+    li.querySelectorAll('figure.player').forEach(initPlayer);
+  }
+
+  // State from the Team checklist: Merged = done; everyone else signed = ready to merge; otherwise who is missing
+  function stateOf(li, b) {
+    const s = b.signoffs || {};
+    const has = k => !!(s[k] && s[k].by);
+    if (has('merged')) return { id: 'done', label: T.stDone, short: T.stDone, next: T.nextDone };
+    const missing = signoffsFor(li).filter(x => x.key !== 'merged' && !has(x.key));
+    if (missing.length) return { id: 'waiting', label: T.stWaitingFor + missing.map(withName).join(', '), short: T.stWaitingFor + missing.map(x => x.label).join(', '), next: T.nextWaiting };
+    return { id: 'ready', label: T.stReady, short: T.stReady, next: T.nextReady };
+  }
+  // Open/closed per viewer (localStorage, may be unavailable); default: all closed
+  const OPEN_KEY = 'tb-open:' + CONFIG.ticket;
+  const openSet = (() => { try { return new Set(JSON.parse(localStorage.getItem(OPEN_KEY) || '[]')); } catch (e) { return new Set(); } })();
+  function saveOpen() { try { localStorage.setItem(OPEN_KEY, JSON.stringify([...openSet])); } catch (e) { /* storage off: state lives for this view only */ } }
+  function setFold(li, open, persist = true) {
+    const btn = li.querySelector('.fold'); const body = li.querySelector('.ac-body');
+    body.hidden = !open; li.classList.toggle('folded', !open);
+    btn.setAttribute('aria-expanded', String(open)); btn.setAttribute('aria-label', (open ? T.foldClose : T.foldOpen) + li.dataset.z);
+    if (persist) { if (open) openSet.add(li.dataset.id); else openSet.delete(li.dataset.id); saveOpen(); }
+  }
+
+  // Proof: {kind: "link"|"log"|"asset", value, label?}; links must be http(s), assets are ids or /_blob/ urls
+  function validProof(pr) {
+    if (!pr || typeof pr !== 'object' || typeof pr.value !== 'string' || !pr.value.trim()) return false;
+    if (pr.kind === 'link') return /^https?:\/\//i.test(pr.value);
+    return pr.kind === 'log' || pr.kind === 'asset';
+  }
+  const assetSrc = v => /^\/_blob\//.test(v) ? v : /^[0-9a-f]{32}$/i.test(v) ? '/_blob/' + v : null;
+  function renderProof(box, pr, missing) {
+    box.textContent = '';
+    if (missing) { box.append(el('span', 'np', T.noProof)); return; }
+    if (!validProof(pr)) return;
+    // a board's own proof label ("przyczyna") says what it is; the prefix says it is the proof
+    const label = pr.label ? (T.proofPrefix || '') + pr.label : ({ link: T.proofLink, log: T.proofLog, asset: T.proofAsset })[pr.kind];
+    if (pr.kind === 'link') { const a = el('a', null, label); a.href = pr.value; a.target = '_blank'; a.rel = 'noopener noreferrer'; box.append(a); }
+    else if (pr.kind === 'log') { const d = el('details'); d.append(el('summary', null, label), el('pre', null, pr.value)); box.append(d); }
+    else {
+      const src = assetSrc(pr.value);
+      if (!src) { box.append(el('span', 'np', T.badAsset)); return; }
+      const img = el('img'); img.src = src; img.alt = label; img.loading = 'lazy'; box.append(img);
+    }
+  }
+  // Dev pill click: the step's proof in the band under the two rows ("Analiza · zrobione · date", text, proof)
+  function fillProof(li, k) {
+    const box = li.querySelector('.ckproof'); const p = li.querySelector(`.ck.dstep[data-k="${k}"]`);
+    if (!p) return;
+    const x = (li._steps || {})[k] || { state: 'todo' }; const s = p.dataset.s;
+    box.dataset.k = k; box.textContent = '';
+    const l1 = el('p', 'ckp1'); l1.style.margin = '0';
+    l1.append(el('b', null, p.querySelector('.ckt').textContent), document.createTextNode(' · ' + [((T.stepWords || {})[s] || ''), fmt(x.at)].filter(Boolean).join(' · ')));
+    box.append(l1);
+    if (x.text) box.append(el('span', 'ckpt', x.text));
+    const pr = el('div', 'proof'); renderProof(pr, s === 'noproof' ? null : x.proof, s === 'noproof');
+    if (pr.childNodes.length) box.append(pr);
+    else if (s !== 'na') box.append(el('span', 'ckpt', T.devNoProofYet));
+  }
+  function toggleProof(li, k) {
+    const box = li.querySelector('.ckproof'); const open = box.hidden || box.dataset.k !== k;
+    li.querySelectorAll('.ck.dstep').forEach(p => p.setAttribute('aria-expanded', String(open && p.dataset.k === k)));
+    box.hidden = !open;
+    if (open) fillProof(li, k);
+  }
+  function lastAt(b, steps) {
+    const ts = [(b.agent || {}).at, ...Object.values(steps || {}).map(x => x && x.at)].map(x => Date.parse(x)).filter(n => !isNaN(n));
+    return ts.length ? new Date(Math.max(...ts)).toISOString() : null;
+  }
+  const cfgTile = id => CONFIG.tiles[id] || {};
+  const zOf = li => li.dataset.z;
+  // "AC1, AC2, AC3, AC5" -> "AC1–AC3, AC5"
+  function acRanges(zs) {
+    const pre = String(zs[0]).replace(/\d+$/, '');
+    const n = zs.map(v => parseInt(String(v).replace(/^\D+/, ''), 10)).sort((a, b) => a - b);
+    const out = [];
+    for (let i = 0; i < n.length; i++) { let j = i; while (j + 1 < n.length && n[j + 1] === n[j] + 1) j++; out.push(j > i ? `${pre}${n[i]}–${pre}${n[j]}` : pre + n[i]); i = j; }
+    return out.join(', ');
+  }
+
+  // ---- dynamic state
+  async function render() {
+    const ids = new Set();
+    docs.forEach(b => Object.values(b.signoffs || {}).forEach(s => s && s.by && !isTeamWindow(s.by) && ids.add(s.by)));
+    docs.forEach(b => b.gate && b.gate.by && !isTeamWindow(b.gate.by) && ids.add(b.gate.by));
+    messages.forEach(m => m.by && ids.add(m.by));
+    const people = user && ids.size ? await user.profiles([...ids]) : {};
+    const nameOf = id => isTeamWindow(id) ? id : ((people[id] && people[id].name) || (id === myId ? T.you : T.unknownUser));
+
+    list.querySelectorAll('li.tile').forEach(li => {
+      const id = li.dataset.id; const b = docs.get(id) || {};
+      const sig = b.signoffs || {};
+      const W = T.markWords || {};
+      // Team pills: ✓ signed (who + date small inside) / ○ open; click signs or undoes
+      li.querySelectorAll('.ck.sign').forEach(btn => {
+        const s = sig[btn.dataset.key]; const on = !!(s && s.by);
+        btn.setAttribute('aria-pressed', String(on)); btn.dataset.s = on ? 'done' : 'todo';
+        btn.querySelector('.ckm').textContent = MARK[on ? 'done' : 'todo'];
+        // inside the pill: who + day; the tooltip has the full time
+        btn.querySelector('.who').textContent = on ? `${s.name || nameOf(s.by)} · ${fmtDay(s.at)}` : '';
+        btn.title = on ? `${s.name || nameOf(s.by)} · ${fmt(s.at)}. ${T.signUndo}` : T.signDo;
+      });
+      const st = stateOf(li, b);
+      li.dataset.state = st.id;
+      // one short state word in the title row: "Gotowe do scalenia" / "Scalone"; nothing while waiting
+      const badge = li.querySelector('.badge'); badge.dataset.state = st.id;
+      badge.textContent = st.id === 'done' ? T.grpDone : st.id === 'ready' ? T.stReady : ''; badge.hidden = !badge.textContent;
+      li.hidden = !!filter && filter !== st.id;
+      // Gate: db wins (someone may have corrected it on the page), board.json seed otherwise
+      const gate = b.gate || cfgTile(id).gate;
+      const gl = gateLabel(gate);
+      const chip = li.querySelector('.gate-chip');
+      chip.textContent = gl.text; chip.dataset.type = gl.type; chip.disabled = readOnly || !db;
+      const gWho = gate && gate.by ? (gate.name_by || nameOf(gate.by)) : '';
+      chip.title = (gate && gate.by && gate.at ? T.gateSet + [gWho, fmt(gate.at)].filter(Boolean).join(' · ') + '. ' : '') + (readOnly || !db ? '' : T.gateClick);
+      chip.setAttribute('aria-label', T.gateAria + gl.text + (readOnly || !db ? '' : T.gateChange));
+      const gn = li.querySelector('.gate-note'); gn.textContent = [(T.gateOff || {})[gl.type], gate && gate.note].filter(Boolean).join(' '); gn.hidden = !gn.textContent;
+      const ge = li.querySelector('.gate-edit');
+      if (ge.hidden) {
+        ge.querySelector('.gate-type').value = gl.type === 'unknown' ? 'fe-flag' : gl.type;
+        ge.querySelector('.gate-name').value = (gate && gate.name) || '';
+        ge.querySelector('.gate-name').disabled = gl.type === 'none';
+        ge.querySelector('.gate-note-in').value = (gate && gate.note) || '';
+      }
+      ge.querySelector('.gate-who').textContent = gate && gate.by ? T.gateLast + [gWho, fmt(gate.at)].filter(Boolean).join(' · ') : T.gateNotYet;
+      // Steps: db agent.steps (agents may update them live), else the board.json steps
+      const steps = ((b.agent || {}).steps) || cfgTile(id).steps || {};
+      // Dev pills: ✓ done, ▶ current (first not done), ○ open, – n/a, ! done without proof; the proof opens under the rows
+      let current = null, noProof = 0;
+      const dsteps = [...li.querySelectorAll('.ck.dstep')];
+      dsteps.forEach(p => {
+        const x = steps[p.dataset.k] || { state: 'todo' };
+        const base = ['done', 'todo', 'na'].includes(x.state) ? x.state : 'todo';
+        const state = base === 'done' && !validProof(x.proof) ? 'noproof' : base;
+        if (state === 'noproof') noProof++;
+        const k = !current && state === 'todo' ? 'current' : state;
+        if (k === 'current') current = p;
+        p.dataset.s = k;
+        p.querySelector('.ckm').textContent = MARK[k];
+        p.title = `${p.querySelector('.ckt').textContent}: ${(T.stepWords || {})[k] || ''}. ${T.devProofClick}`;
+      });
+      li._steps = steps;
+      li.dataset.flow = current ? 'open' : 'done';
+      const ckp = li.querySelector('.ckproof');
+      if (!ckp.hidden) fillProof(li, ckp.dataset.k);
+      // DEV hint: Dev checklist done but DEV not signed yet: dot on the DEV pill, words in title + aria-describedby
+      const devPill = li.querySelector('.ck.sign[data-key="dev"]');
+      if (devPill) {
+        const hint = li.dataset.flow === 'done' && !(sig.dev && sig.dev.by);
+        if (hint) { devPill.dataset.hint = ''; devPill.setAttribute('aria-describedby', 'devhint-' + id); devPill.title = T.devHint; }
+        else { delete devPill.dataset.hint; devPill.removeAttribute('aria-describedby'); }
+      }
+      // Mapa AC row: Dev checklist segments (A P C T) and Team chips with text marks; state line only when it adds
+      // information (partly signed, ready, merged); "Czeka na" with nobody signed is covered by the group heading
+      const row = idxRows.get(id);
+      if (row) {
+        const fl = row.querySelector('.iflow'); fl.textContent = '';
+        const said = [];
+        dsteps.forEach(p => {
+          const k = p.dataset.s;
+          const full = p.querySelector('.ckt').textContent;
+          const x = el('span', 'iseg', MARK[k] + ((T.stepShort || {})[p.dataset.k] || full)); x.dataset.s = k;
+          x.title = `${full}: ${W[k] || ''}`; fl.append(x); said.push(x.title);
+        });
+        const tm = row.querySelector('.iteam'); tm.textContent = '';
+        const team = [];
+        signoffsFor(li).forEach(x => {
+          const on = !!(sig[x.key] && sig[x.key].by);
+          const t = el('span', 'ichip', MARK[on ? 'done' : 'todo'] + '\u2009' + ((T.signShort || {})[x.key] || x.label)); t.dataset.s = on ? 'done' : 'todo';
+          t.title = `${x.label}: ` + (on ? `${sig[x.key].name || nameOf(sig[x.key].by)} · ${fmt(sig[x.key].at)}` : (W.unsigned || ''));
+          tm.append(t); team.push(`${x.label} ${on ? W.signed : W.unsigned}`);
+        });
+        const anySigned = signoffsFor(li).some(x => x.key !== 'merged' && sig[x.key] && sig[x.key].by);
+        const ist = row.querySelector('.ist');
+        ist.textContent = st.id === 'done' ? T.grpDone : st.id === 'ready' ? T.stReady : anySigned ? st.short : '';
+        ist.hidden = !ist.textContent;
+        row.dataset.state = st.id;
+        row.dataset.group = st.id === 'done' ? 'done' : st.id === 'ready' ? 'ready' : li.dataset.flow === 'open' ? 'flow' : 'waiting';
+        row.dataset.noproof = noProof ? '1' : '';
+        row.querySelector('a').setAttribute('aria-label', `${zOf(li)}. ${T.idxFlow}: ${said.join(', ')}. ${T.idxTeam}: ${team.join(', ')}. ${st.short}`);
+      }
+      const last = lastAt(b, steps);
+      li.querySelector('.upd').textContent = last ? T.changed + fmt(last) : '';
+      const note = li.querySelector('.note');
+      if (document.activeElement !== note) note.value = b.note || '';
+      li.querySelector('.note-empty').hidden = !!note.value;
+      note.disabled = readOnly || !db;
+      const mine = messages.filter(m => m.item === id).sort((a, c) => String(a.at).localeCompare(String(c.at)));
+      const box = li.querySelector('.msgs'); box.textContent = '';
+      if (!mine.length) box.append(el('p', 'empty', T.threadEmpty));
+      mine.forEach(m => {
+        const r = el('div', 'msg'); const by = el('span', 'by');
+        const src = m.importedAuthor ? (m.source != null ? m.source : T.fromSlack) : '';
+        by.append(el('b', null, m.importedAuthor || nameOf(m.by)), document.createTextNode(' · ' + fmt(m.at) + (src ? ' · ' + src : '')));
+        r.append(by, el('div', 'text', m.text)); box.append(r);
+      });
+    });
+
+    // Stan tablicy: Dev checklist finished + sign-offs per role (real counts of this board only), "Pokaż tylko:" filters,
+    // then who still has to sign as a compact table role -> AC numbers (ranges)
+    const summary = document.getElementById('summary'); summary.textContent = '';
+    const tilesAll = [...list.querySelectorAll('li.tile')];
+    const sigOf = (li, k) => ((((docs.get(li.dataset.id) || {}).signoffs || {})[k]) || {}).by;
+    const isum = el('p', 'isum');
+    const line = text => { const i = text.indexOf(':') + 1; const sp = el('span'); sp.append(el('b', null, text.slice(0, i)), text.slice(i)); return sp; };
+    isum.append(line(T.idxSumFlow.replace('{n}', tilesAll.filter(li => li.dataset.flow === 'done').length).replace('{t}', tilesAll.length)));
+    const per = SIGNOFFS.filter(x => !x.bugOnly).map(x => {
+      const of = tilesAll.filter(li => signoffsFor(li).includes(x));
+      return `${x.label} ${of.filter(li => sigOf(li, x.key)).length}/${of.length}`;
+    });
+    isum.append(line(T.idxSumSign + ' ' + per.join(' · ')));
+    const chips = el('div', 'chips'); chips.append(el('span', 'flabel', T.filterLabel));
+    STATES.forEach(s => {
+      const n = tilesAll.filter(li => li.dataset.state === s.id).length;
+      const c = el('button', 'count'); c.type = 'button'; c.dataset.filter = s.id; c.dataset.state = s.id;
+      c.setAttribute('aria-pressed', String(filter === s.id)); c.disabled = !n && filter !== s.id;
+      c.append(el('span', 'dot'), document.createTextNode(s.label + ': '), el('b', null, n + T.countUnit)); chips.append(c);
+    });
+    if (filter) { const all = el('button', 'count clear', T.showAll); all.type = 'button'; all.dataset.filter = ''; chips.append(all); }
+    const wait = el('section', 'waitlist'); const wh = el('h3', null, T.waitTitle); wh.id = 'wait-h'; wait.append(wh);
+    const tb = el('tbody');
+    SIGNOFFS.filter(x => x.key !== 'merged' && x.key !== 'tester').forEach(x => {
+      const acs = tilesAll.filter(li => li.dataset.state === 'waiting' && signoffsFor(li).includes(x) && !sigOf(li, x.key)).map(li => li.dataset.z);
+      if (!acs.length) return;
+      const tr = el('tr'); const th = el('th', null, withName(x)); th.scope = 'row'; tr.append(th, el('td', null, acRanges(acs))); tb.append(tr);
+    });
+    if (tb.children.length) {
+      const table = el('table'); table.setAttribute('aria-labelledby', 'wait-h');
+      const hr = el('tr'); [T.waitRole, T.waitAcs].forEach(t => { const th = el('th', null, t); th.scope = 'col'; hr.append(th); });
+      const thead = el('thead'); thead.append(hr); table.append(thead, tb); wait.append(table);
+    } else wait.append(el('p', 'empty', T.waitNone));
+    summary.append(isum, chips, wait);
+    // Mapa AC: rows into state groups (tile order kept), "Grupa · n" headings, empty groups hidden; legend gets "!" only when used
+    IGROUPS.forEach(g => {
+      const rows = tilesAll.map(li => idxRows.get(li.dataset.id)).filter(r => r && r.dataset.group === g.id);
+      if (rows.some((r, i) => g.ol.children[i] !== r) || g.ol.children.length !== rows.length) rows.forEach(r => g.ol.append(r));
+      g.h.textContent = `${g.label} · ${rows.length}`; g.s.hidden = !rows.length;
+    });
+    const leg = document.getElementById('idx-leg');
+    if (leg) leg.textContent = T.indexLegend + ([...idxRows.values()].some(r => r.dataset.noproof) ? T.indexNoProof : '');
+  }
+
+  function notice(t) { noticeEl.textContent = t; }
+  function setReadOnly(msg) { readOnly = true; app.classList.add('ro'); notice(msg); render(); }
+  function handleWriteError(e) {
+    const code = e && e.code;
+    if (code === 'invalid_argument' || code === 'revoked' || code === 'not_granted') setReadOnly(T.roView);
+    else if (code === 'resource_exhausted') notice(T.roTooMany);
+    else if (code === 'quota_exceeded') notice(T.roFull);
+    else notice(T.roFail);
+  }
+  // Partial update only: never replaces the doc, so other people's sign-offs and notes stay
+  function writeItem(id, patch) {
+    if (!db || readOnly) return;
+    const prev = queues.get(id) || Promise.resolve();
+    const next = prev.then(async () => {
+      const ref = db.collection('items').doc(id);
+      if (docs.has(id)) await ref.update(patch);
+      else await ref.set({ note: '', signoffs: {}, ...patch });
+    }).catch(handleWriteError);
+    queues.set(id, next);
+  }
+
+  // ---- events
+  list.addEventListener('click', e => {
+    const img = e.target.closest('.proof img, .shots .stage img');
+    const foldBtn = e.target.closest('.fold, .title');
+    if (foldBtn) { const li = foldBtn.closest('li.tile'); setFold(li, li.querySelector('.fold').getAttribute('aria-expanded') !== 'true'); return; }
+    if (img) { const lb = el('div', 'lightbox'); const big = el('img'); big.src = img.src; big.alt = img.alt; lb.append(big); lb.addEventListener('click', () => lb.remove()); document.body.append(lb); return; }
+    const dstep = e.target.closest('.ck.dstep');
+    if (dstep) { toggleProof(dstep.closest('li.tile'), dstep.dataset.k); return; }
+    if (readOnly || !db) return;
+    const chipBtn = e.target.closest('.gate-chip');
+    if (chipBtn) { toggleGate(chipBtn.closest('li.tile'), chipBtn.getAttribute('aria-expanded') !== 'true'); return; }
+    const gCancel = e.target.closest('.gate-cancel');
+    if (gCancel) { toggleGate(gCancel.closest('li.tile'), false); return; }
+    const sign = e.target.closest('.sign');
+    if (sign) {
+      if (!myId) { notice(T.signNeedLogin); return; }
+      const id = sign.closest('li.tile').dataset.id;
+      const cur = ((docs.get(id) || {}).signoffs || {})[sign.dataset.key];
+      writeItem(id, { signoffs: { [sign.dataset.key]: cur && cur.by ? null : { by: myId, at: new Date().toISOString() } } });
+    }
+  });
+  // Index row click: open the AC, then the anchor scrolls to it
+  document.querySelectorAll('.ilist a[href^="#tile-"]').forEach(a => a.addEventListener('click', () => {
+    const li = document.getElementById(a.getAttribute('href').slice(1)); if (li) setFold(li, true);
+  }));
+  const openFromHash = () => { const li = location.hash.startsWith('#tile-') && document.getElementById(location.hash.slice(1)); if (li) setFold(li, true); };
+  window.addEventListener('hashchange', openFromHash);
+  document.getElementById('summary').addEventListener('click', e => {
+    const btn = e.target.closest('[data-filter]'); if (!btn) return;
+    filter = btn.dataset.filter && filter !== btn.dataset.filter ? btn.dataset.filter : null;
+    render();
+  });
+  function toggleGate(li, open) {
+    const chip = li.querySelector('.gate-chip'); const ge = li.querySelector('.gate-edit');
+    ge.hidden = !open; chip.setAttribute('aria-expanded', String(open));
+    if (open) { render(); ge.querySelector('.gate-type').focus(); } else { chip.focus(); render(); }
+  }
+  list.addEventListener('change', e => {
+    if (e.target.classList.contains('gate-type')) {
+      e.target.closest('.gate-edit').querySelector('.gate-name').disabled = e.target.value === 'none';
+      return;
+    }
+    if (!e.target.classList.contains('note') || readOnly) return;
+    const id = e.target.closest('li.tile').dataset.id;
+    if ((docs.get(id) || {}).note !== e.target.value) writeItem(id, { note: e.target.value });
+  });
+  list.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && e.target.closest('.gate-edit')) { e.stopPropagation(); toggleGate(e.target.closest('li.tile'), false); return; }
+    if (e.key === 'Enter' && e.target.classList.contains('note')) e.target.blur();
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && e.target.tagName === 'TEXTAREA') e.target.form.requestSubmit();
+  });
+  list.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!db || readOnly) return;
+    if (e.target.classList.contains('gate-edit')) {
+      const li = e.target.closest('li.tile');
+      const type = e.target.querySelector('.gate-type').value;
+      const name = type === 'none' ? '' : e.target.querySelector('.gate-name').value.trim();
+      const note = e.target.querySelector('.gate-note-in').value.trim();
+      writeItem(li.dataset.id, { gate: { type, name, note, by: myId, at: new Date().toISOString() } });
+      toggleGate(li, false);
+      return;
+    }
+    const ta = e.target.querySelector('textarea'); const text = ta.value.trim(); if (!text) return;
+    const item = e.target.closest('li.tile').dataset.id;
+    ta.value = '';
+    try { await db.collection('messages').add({ item, by: myId, at: new Date().toISOString(), text }); }
+    catch (err) { ta.value = text; handleWriteError(err); }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.lightbox').forEach(n => n.remove()); });
+  // Index: highlight the tile in view
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      document.querySelectorAll('.ilist li').forEach(r => r.setAttribute('aria-current', String(r.dataset.id === en.target.dataset.id)));
+    }), { rootMargin: '-20% 0px -70% 0px' });
+    list.querySelectorAll('li.tile').forEach(li => io.observe(li));
+  }
+
+  // ---- boot
+  list.querySelectorAll('li.tile').forEach(buildTile);
+  // Mapa AC groups: rows are moved by render() into the group of their state
+  const idxRows = new Map([...document.querySelectorAll('.ilist li[data-id]')].map(r => [r.dataset.id, r]));
+  const igroups = document.getElementById('idx-groups');
+  const IGROUPS = [['flow', T.grpFlow], ['waiting', T.grpWaiting], ['ready', T.grpReady], ['done', T.grpDone]].map(([id, label]) => {
+    const sec = el('section', 'igrp'); const h = el('h3'); h.id = 'igrp-' + id;
+    const ol = el('ol', 'ilist'); ol.setAttribute('aria-labelledby', h.id); sec.append(h, ol);
+    return { id, label, s: sec, h, ol };
+  });
+  if (igroups) { igroups.textContent = ''; IGROUPS.forEach(g => igroups.append(g.s)); }
+  list.querySelectorAll('li.tile').forEach(li => setFold(li, openSet.has(li.dataset.id), false));
+  const fa = el('div', 'fold-all');
+  const openAll = el('button', 'btn small ghost', T.openAll); openAll.type = 'button';
+  const closeAll = el('button', 'btn small ghost', T.closeAll); closeAll.type = 'button';
+  openAll.addEventListener('click', () => list.querySelectorAll('li.tile').forEach(li => setFold(li, true)));
+  closeAll.addEventListener('click', () => list.querySelectorAll('li.tile').forEach(li => setFold(li, false)));
+  fa.append(openAll, closeAll); list.before(fa);
+  openFromHash();
+  render();
+
+  (async () => {
+    const use = window.claude && window.claude.use;
+    if (!use) { setReadOnly(T.roOutside); return; }
+    [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+    if (!db) { setReadOnly(T.roNoDb); return; }
+    if (user) {
+      myId = await user.id();
+      const canWrite = await user.can('data.write');
+      if (canWrite === false) setReadOnly(T.roView);
+    }
+    let loaded = 0;
+    const ready = () => { if (++loaded === 2 && !readOnly) notice(''); };
+    const onErr = e => { if (e && e.code !== 'unavailable') setReadOnly(T.roBroken); };
+    let firstItems = true, firstMsgs = true;
+    db.collection('items').onSnapshot(snap => {
+      docs.clear(); snap.docs.forEach(d => docs.set(d.id, d.data())); render();
+      if (firstItems) { firstItems = false; ready(); }
+    }, onErr);
+    db.collection('messages').onSnapshot(snap => {
+      messages = snap.docs.map(d => ({ id: d.id, ...d.data() })); render();
+      if (firstMsgs) { firstMsgs = false; ready(); }
+    }, onErr);
+  })().catch(() => setReadOnly(T.roGeneric));
+})();
+</script>
+<!--TB:DIFF_JS-->
